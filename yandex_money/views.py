@@ -69,9 +69,9 @@ class BaseView(View):
         ):
             mail_admins(
                 'yandexmoney_django error',
-                'View: {view}\n'
-                'post data: {post_data}\n'
-                'response: {response}\n'
+                'View: {view}\n\n'
+                'post data: {post_data}\n\n'
+                'response: {response}\n\n'
                 'form errors: {errors}'.format(
                     view=self.__class__.__name__,
                     post_data=request.POST,
