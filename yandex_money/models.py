@@ -135,6 +135,18 @@ class Payment(models.Model):
     def get_used_scids(cls):
         return cls.objects.values_list('scid', flat=True).distinct()
 
+    @classmethod
+    def create(cls, **kwargs):
+        params = {
+            'shop_id': settings.YANDEX_MONEY_SHOP_ID,
+            'scid': settings.YANDEX_MONEY_SCID,
+            'fail_url': settings.YANDEX_MONEY_FAIL_URL,
+            'success_url': settings.YANDEX_MONEY_SUCCESS_URL,
+        }
+        params.update(kwargs)
+        book = cls(**params)
+        return book
+
     class Meta:
         ordering = ('-pub_date',)
         unique_together = (
