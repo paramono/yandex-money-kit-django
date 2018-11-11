@@ -38,6 +38,7 @@ class BaseView(View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        errors = None
         if form.is_valid():
             cd = form.cleaned_data
             if form.check_md5(cd):
@@ -57,6 +58,7 @@ class BaseView(View):
                 params = {'code': '1'}
         else:
             params = {'code': '200'}
+            errors = form.errors
 
         self.logging(request, params)
         content = self.get_xml(params)
@@ -65,10 +67,18 @@ class BaseView(View):
             getattr(settings, 'YANDEX_MONEY_MAIL_ADMINS_ON_PAYMENT_ERROR', True) and
             params.get('code') != '0'
         ):
-            mail_admins('yandexmoney_django error', 'post data: {post_data}\n\nresponse:{response}'.format(
-                post_data=request.POST,
-                response=content,
-            ))
+            mail_admins(
+                'yandexmoney_django error',
+                'View: {view}\n'
+                'post data: {post_data}\n'
+                'response: {response}\n'
+                'form errors: {errors}'.format(
+                    view=self.__class__.__name__,
+                    post_data=request.POST,
+                    response=content,
+                    errors=errors
+                )
+            )
 
         return HttpResponse(content, content_type='application/xml')
 
